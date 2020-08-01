@@ -60,7 +60,7 @@ describe('SignIn Page', () => {
     fireEvent.click(buttonElement);
 
     await wait(() => {
-      expect(mockHistoryPush).toHaveBeenCalledWith('/dashboard');
+      expect(mockHistoryPush).not.toHaveBeenCalledWith('/dashboard');
     });
   });
 });

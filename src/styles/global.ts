@@ -2,6 +2,11 @@ import { createGlobalStyle } from 'styled-components';
 
 export default createGlobalStyle`
   * {
+    fontFamily: '"Montserrat", "Helvetica", "Arial", sans-serif';
+    fontSize: 14;
+    fontWeightLight: 300;
+    fontWeightRegular: 400;
+    fontWeightMedium: 500;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
