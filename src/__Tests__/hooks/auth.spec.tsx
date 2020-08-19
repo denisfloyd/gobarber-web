@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react-hooks';
 import MockAdapter from 'axios-mock-adapter';
 import { useAuth, AuthProvider } from '../../hooks/auth';
 import api from '../../services/api';
@@ -83,15 +83,41 @@ describe('Auth hook', () => {
 
     const removeItemSpy = jest.spyOn(Storage.prototype, 'removeItem');
 
-    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+    const { result } = renderHook(() => useAuth(), {
       wrapper: AuthProvider,
     });
 
-    result.current.signOut();
-
-    await waitForNextUpdate();
+    act(() => {
+      result.current.signOut();
+    });
 
     expect(removeItemSpy).toHaveBeenCalledTimes(2);
-    expect(result.current.user.email).toBeUndefined();
+    expect(result.current.user).toBeUndefined();
+  });
+
+  it('should be able to update user data', async () => {
+    const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider,
+    });
+
+    const user = {
+      id: 'user123',
+      name: 'John Doe',
+      email: 'johndoe@example.com.br',
+      avatar_url: 'image-test.svg',
+    };
+
+    act(() => {
+      result.current.updateUser(user);
+    });
+
+    expect(setItemSpy).toHaveBeenCalledWith(
+      '@GoBarber:user',
+      JSON.stringify(user),
+    );
+
+    expect(result.current.user).toEqual(user);
   });
 });
