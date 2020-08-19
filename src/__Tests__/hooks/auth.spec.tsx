@@ -64,4 +64,34 @@ describe('Auth hook', () => {
 
     expect(result.current.user.email).toEqual('johndoe@example.com.br');
   });
+
+  it('should be able to sign oot', async () => {
+    jest.spyOn(Storage.prototype, 'getItem').mockImplementation(key => {
+      switch (key) {
+        case '@GoBarber:token':
+          return 'token-123';
+        case '@GoBarber:user':
+          return JSON.stringify({
+            id: 'user123',
+            name: 'John Doe',
+            email: 'johndoe@example.com.br',
+          });
+        default:
+          return null;
+      }
+    });
+
+    const removeItemSpy = jest.spyOn(Storage.prototype, 'removeItem');
+
+    const { result, waitForNextUpdate } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider,
+    });
+
+    result.current.signOut();
+
+    await waitForNextUpdate();
+
+    expect(removeItemSpy).toHaveBeenCalledTimes(2);
+    expect(result.current.user.email).toBeUndefined();
+  });
 });
